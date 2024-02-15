@@ -1,11 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-// Import other route files
 const adminRoutes = require('./AdminRoutes');
+const customerRoutes = require('./CustomerRoutes')
 
-// Register routes from other files
 router.use('/api/admin', adminRoutes);
-
-// Use additional routes as needed
+router.use('/api/customer', customerRoutes)
 module.exports = router;

@@ -11,8 +11,8 @@ const mealTypeSchema = new mongoose.Schema({
     full_name: String,
     total_cal: Number,
     recipe: String
-  });
-  
+});
+
 const MealType = mongoose.model('MealType', mealTypeSchema, 'mealType', 'wellquest');
 
 module.exports = MealType;

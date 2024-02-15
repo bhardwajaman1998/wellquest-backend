@@ -4,11 +4,16 @@ const customerSchema = new mongoose.Schema({
   _id: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    auto: true
   },
   name: String,
   email: String,
-  password: String
+  password: String,
+  coach_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Coach',
+    required: false
+  },
+  cust_id: String
 });
 
 const Customer = mongoose.model('Customer', customerSchema, 'customer', 'wellquest');

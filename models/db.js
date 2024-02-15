@@ -1,4 +1,4 @@
-const db = "mongodb+srv://skillbridge:skillbridge@skillbridge-development.7ydtqsx.mongodb.net/?retryWrites=true&w=majority"; //process.env.DB_URI;
+const db = "mongodb+srv://skillbridge:skillbridge@skillbridge-development.7ydtqsx.mongodb.net/wellquest?retryWrites=true&w=majority"; //process.env.DB_URI;
 const mongoose = require('mongoose');
 
 mongoose.set ('strictQuery' ,true) ;
