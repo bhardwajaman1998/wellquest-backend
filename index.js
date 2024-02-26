@@ -13,12 +13,9 @@ app.use(cors());
 
 require('./models/db');
 
-// Import routes
-const routes = require('./routes/index'); // index contains all the routes
+const routes = require('./routes/index');
 
-// Use routes
 app.use(routes);
-// console.log(process.env.BASE_URL);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

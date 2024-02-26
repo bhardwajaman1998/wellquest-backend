@@ -6,7 +6,7 @@ const secretKey = process.env.JWT_SECRET;
 // Signup endpoint
 const signUp = async (req, res) => {
   try {
-    const { email, password, username, name } = req.body;
+    const { email, password } = req.body;
 
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
@@ -18,7 +18,7 @@ const signUp = async (req, res) => {
     const admin = new Admin({ email, password: hashedPassword, username, name });
 
     const savedAdmin = await admin.save();
-    const token = jwt.sign({ email, username }, secretKey, { expiresIn: '2h' });
+    const token = jwt.sign({ email, username }, secretKey, { expiresIn: '10d' });
     res.status(201).json({ message: 'Admin signed up successfully', admin: savedAdmin, generatedToken: token});
   } catch (error) {
     console.error('Error signing up admin:', error);
@@ -41,7 +41,7 @@ const signIn = async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    const token = jwt.sign({ adminId: admin.email }, secretKey, { expiresIn: '2h' });
+    const token = jwt.sign({ adminId: admin.email }, secretKey, { expiresIn: '10d' });
 
     res.json({ message: 'Admin logged in successfully', token });
   } catch (error) {
