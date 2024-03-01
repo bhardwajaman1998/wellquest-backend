@@ -221,9 +221,9 @@ get_coaches: async (req, res) => {
 
   store_preferences: async (req, res) => {
     try {
-      const { cust_id, gender, age, height, goal, activityLevel } = req.body;
+      const { cust_id, gender, age, weight, height, goal, activityLevel } = req.body;
 
-      if (!cust_id || !gender || !age || !height || !goal || !activityLevel) {
+      if (!cust_id || !gender || !age || !weight || !height || !goal || !activityLevel) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
@@ -231,13 +231,14 @@ get_coaches: async (req, res) => {
         cust_id,
         gender,
         age,
+        weight,
         height,
         goal,
         activityLevel
       });
 
       await newPreference.save();
-
+      console.log(`${newPreference}`)
       res.status(201).json({ message: 'Preferences stored successfully', newPreference });
     } catch (error) {
       res.status(500).json({ error: error.message });
