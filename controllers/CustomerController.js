@@ -42,7 +42,7 @@ const CustomerController = {
   get_scheduled_appointments: async (req, res) => {
     try {
         const customerId = req.query.customerId;
-        const currentAppointments = await appointment.find({ customerId });
+        const currentAppointments = await Appointment.find({customerId});
         res.json(currentAppointments);
       } catch (error) {
         res.status(500).json({ error: error.message });
