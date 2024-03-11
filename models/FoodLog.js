@@ -8,9 +8,14 @@ const foodLogSchema = new mongoose.Schema({
     },
     name: String,
     serving_size: String,
-    num_of_serving: Number,
     timeStamp: Date,
-    meal_type: String
+    meal_type: String,
+    info: {
+      calories: Number,
+      carbs: Number,
+      fats: Number,
+      proteins: Number
+    }
   });
   
 const FoodLog = mongoose.model('FoodLog', foodLogSchema, 'foodLog', 'wellquest');

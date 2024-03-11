@@ -87,7 +87,6 @@ const CustomerController = {
 get_coaches: async (req, res) => {
     try {
         const coaches = await Coach.find();
-    
         res.json({ coaches });
       } catch (error) {
         res.status(500).json({ error: error.message });
@@ -157,9 +156,9 @@ get_coaches: async (req, res) => {
 
   log_meal: async (req, res) => {
     try {
-        const { cust_id, name, serving_size, num_of_serving, timeStamp, meal_type } = req.body;
+        const { cust_id, name, serving_size, timeStamp, meal_type, info } = req.body;
     
-        if (!cust_id || !name || !serving_size || !num_of_serving || !timeStamp || !meal_type) {
+        if (!cust_id || !name || !serving_size || !timeStamp || !meal_type || !info) {
           return res.status(400).json({ error: 'Missing required fields' });
         }
     
@@ -167,9 +166,14 @@ get_coaches: async (req, res) => {
           cust_id,
           name,
           serving_size,
-          num_of_serving,
           timeStamp,
-          meal_type
+          meal_type,
+          info: {
+            calories: info.calories || 0,
+            carbs: info.carbs || 0,
+            fats: info.fats || 0,
+            proteins: info.proteins || 0
+          }
         });
     
         await newFoodLog.save();
