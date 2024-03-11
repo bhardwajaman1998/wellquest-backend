@@ -225,28 +225,47 @@ get_coaches: async (req, res) => {
 
   store_preferences: async (req, res) => {
     try {
-      const { cust_id, gender, age, height, goal, activityLevel } = req.body;
+        const { cust_id, gender, age, weight, height, goal, activityLevel } = req.body;
 
-      if (!cust_id || !gender || !age || !height || !goal || !activityLevel) {
-        return res.status(400).json({ error: 'Missing required fields' });
-      }
+        if (!cust_id || !gender || !age || !weight || !height || !goal || !activityLevel) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
 
-      const newPreference = new Preferences({
-        cust_id,
-        gender,
-        age,
-        height,
-        goal,
-        activityLevel
-      });
+        let existingPreference = await Preferences.findOne({ cust_id });
 
-      await newPreference.save();
+        if (existingPreference) {
+            // Update existing preference
+            existingPreference.gender = gender;
+            existingPreference.age = age;
+            existingPreference.weight = weight;
+            existingPreference.height = height;
+            existingPreference.goal = goal;
+            existingPreference.activityLevel = activityLevel;
 
-      res.status(201).json({ message: 'Preferences stored successfully', newPreference });
+            await existingPreference.save();
+
+            res.status(200).json({ message: 'Preferences updated successfully', updatedPreference: existingPreference });
+        } else {
+            // Create new preference
+            const newPreference = new Preferences({
+                cust_id,
+                gender,
+                age,
+                weight,
+                height,
+                goal,
+                activityLevel
+            });
+
+            await newPreference.save();
+
+            res.status(201).json({ message: 'Preferences stored successfully', newPreference });
+        }
     } catch (error) {
-      res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
-  },
+},
+
   get_preferences: async (req, res) => {
     try {
         const { cust_id } = req.query;

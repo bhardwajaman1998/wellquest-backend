@@ -8,7 +8,8 @@ const preferencesSchema = new mongoose.Schema({
     },
     gender: String,
     age: Number,
-    height: Number,
+    height: String,
+    weight: String,
     goal: String,
     activityLevel: String
 });
