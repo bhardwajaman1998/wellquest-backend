@@ -10,7 +10,8 @@ const coachSchema = new mongoose.Schema({
     gyms: [String],
     description_array: [[String]],
     booked_slot: [Date],
-    available_slots: [[String]]
+    available_slots: [[String]],
+    personal_trainer:Boolean,
 });
   
 const Coach = mongoose.model('Coach', coachSchema, 'coach', 'wellquest');
