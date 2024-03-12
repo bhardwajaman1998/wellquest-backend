@@ -12,7 +12,8 @@ const appointmentSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Customer',
       required: true
-    }
+    },
+    timeSlot:String,
   });
   
 const Appointment = mongoose.model('Appointment', appointmentSchema, 'appointment', 'wellquest');

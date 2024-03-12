@@ -42,7 +42,7 @@ const CustomerController = {
   get_scheduled_appointments: async (req, res) => {
     try {
         const customerId = req.query.customerId;
-        const currentAppointments = await appointment.find({ customerId });
+        const currentAppointments = await Appointment.find({customerId});
         res.json(currentAppointments);
       } catch (error) {
         res.status(500).json({ error: error.message });
@@ -51,38 +51,39 @@ const CustomerController = {
 
   schedule_appointment: async (req, res) => {
     try {
-        const { cust_id, coach_id, datetime } = req.body;
-        console.log(req.body)
-        const date = new Date(datetime);
-    
-        if (!cust_id || !coach_id || !date) {
+        const { cust_id, coach_id, date, timeSlot } = req.body;
+        console.log(req.body);
+
+        if (!cust_id || !coach_id || !date || !timeSlot) {
           return res.status(400).json({ error: 'Missing required fields' });
         }
-    
+
         const currentCoach = await Coach.findById(coach_id);
         if (!currentCoach) {
           return res.status(404).json({ error: 'Coach not found' });
         }
-    
+
         const currentCustomer = await Customer.findById(cust_id);
         if (!currentCustomer) {
           return res.status(404).json({ error: 'Customer not found' });
         }
-    
+
         const newAppointment = new Appointment({
           date,
           coach_id,
           coach_name: currentCoach.name,
-          cust_id
+          cust_id,
+          timeSlot,
         });
-    
+
         await newAppointment.save();
-    
+
         res.status(201).json({ message: 'Appointment scheduled successfully', newAppointment });
       } catch (error) {
         res.status(500).json({ error: error.message });
       }
   },
+
 
 get_coaches: async (req, res) => {
     try {
