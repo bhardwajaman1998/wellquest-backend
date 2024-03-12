@@ -222,7 +222,25 @@ get_coaches: async (req, res) => {
         res.status(500).json({ error: error.message });
       }
   },
-
+  getLastThreeMeals: async (req, res) => {
+    try {
+      const { cust_id } = req.query;
+  
+      if (!cust_id) {
+        return res.status(400).json({ error: 'Missing customer ID' });
+      }
+  
+      const lastThreeMeals = await foodLog.find({ cust_id: cust_id })
+                                        .sort({ timeStamp: -1 })
+                                        .limit(3)
+                                        .exec();
+  
+      res.json(lastThreeMeals);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  
   store_preferences: async (req, res) => {
     try {
         const { cust_id, gender, age, weight, height, goal, activityLevel } = req.body;
