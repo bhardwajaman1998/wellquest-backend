@@ -232,19 +232,15 @@ get_coaches: async (req, res) => {
         return res.status(400).json({ error: 'Missing customer ID' });
       }
   
-      // Get the current date and time
       const now = new Date();
   
-      // Set the time to midnight to represent the beginning of the current day
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   
-      // Query the database to find meal logs for the current day
       const todayMeals = await foodLog.find({ cust_id, timeStamp: { $gte: startOfDay } });
   
-      // Calculate the total calories consumed
       let totalCalories = 0;
       todayMeals.forEach((meal) => {
-        totalCalories += meal.info.calories; // Assuming calories are stored in the 'info' field
+        totalCalories += meal.info.calories;
       });
   
       res.json({ totalCaloriesConsumed: totalCalories });
