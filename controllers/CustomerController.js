@@ -243,6 +243,33 @@ const CustomerController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  get_calories_consumed: async (req, res) => {
+    try {
+      const cust_id = req.query.cust_id;
+      if (!cust_id) {
+        return res.status(400).json({ error: "Missing customer ID" });
+      }
+      const now = new Date();
+      const startOfDay = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+      );
+      const todayMeals = await foodLog.find({
+        cust_id,
+        timeStamp: { $gte: startOfDay },
+      });
+      let totalCalories = 0;
+      todayMeals.forEach((meal) => {
+        totalCalories += meal.info.calories;
+      });
+      res.json({ totalCaloriesConsumed: totalCalories });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   getLastThreeMeals: async (req, res) => {
     try {
       const { cust_id } = req.query;
@@ -281,15 +308,30 @@ const CustomerController = {
       }
 
       // Calculate BMR based on gender
+
+      const numericPart2 = height.match(/\d+/);
+      const number2 = parseFloat(numericPart2[0]);
+
+      const numericPart3 = weight.match(/\d+/);
+      const number3 = parseFloat(numericPart3[0]);
+
       let bmr;
       if (gender === "male") {
-        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+        bmr =
+          10 * parseFloat(number3).toFixed(2) +
+          6.25 * parseFloat(number2).toFixed(2) -
+          5 * parseFloat(age).toFixed(2) +
+          5;
       } else if (gender === "female") {
-        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+        bmr =
+          10 * parseFloat(number3).toFixed(2) +
+          6.25 * parseFloat(number2).toFixed(2) -
+          5 * parseFloat(age).toFixed(2) -
+          161;
       }
 
       // Adjust BMR based on activity level (TDEE) - Total Daily Energy Expenditure
-      let tdee;
+      let tdee = 2000;
       switch (goal) {
         case "Get Fitter":
           activityMultiplier = 1.2;
@@ -317,8 +359,8 @@ const CustomerController = {
         // Update existing preference
         existingPreference.gender = gender;
         existingPreference.age = age;
-        existingPreference.weight = weight;
-        existingPreference.height = height;
+        existingPreference.weight = number3;
+        existingPreference.height = number2;
         existingPreference.goal = goal;
         existingPreference.activityLevel = activityLevel;
         existingPreference.minimumCalories = tdee; // Store calculated minimum calories
