@@ -18,6 +18,7 @@ router.post('/make_meal_plan', CustomerController.make_meal_plan);
 router.post('/log_meal', CustomerController.log_meal);
 router.get('/get_meal_plan', CustomerController.get_meal_plan);
 router.get('/get_today_meals', CustomerController.get_today_meals);
+router.get('/get_calories_consumed', CustomerController.get_calories_consumed);
 router.get('/get_history_meals', CustomerController.getLastThreeMeals);
 
 router.post('/store_preferences', CustomerController.store_preferences);
