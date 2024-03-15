@@ -13,7 +13,8 @@ const customerSchema = new mongoose.Schema({
     ref: 'Coach',
     required: false
   },
-  cust_id: String
+  cust_id: String,
+  dailyCalories: Number
 });
 
 const Customer = mongoose.model('Customer', customerSchema, 'customer', 'wellquest');

@@ -7,6 +7,53 @@ const milestone = require("../models/Milestone");
 const foodLog = require("../models/FoodLog");
 const mealPlan = require("../models/MealPlan");
 
+
+const calculateCalories = (weight, height, gender, age, goal, activityLevel) => {
+  // Constants for calculating BMR
+  const MALE_BMR_CONSTANT = 66.5;
+  const FEMALE_BMR_CONSTANT = 65.1;
+  const WEIGHT_CONSTANT = 13.75;
+  const HEIGHT_CONSTANT = 5.003;
+  const AGE_CONSTANT = 6.775;
+
+  let bmr;
+  if (gender === 'male') {
+      bmr = MALE_BMR_CONSTANT + (WEIGHT_CONSTANT * weight) + (HEIGHT_CONSTANT * height) - (AGE_CONSTANT * age);
+  } else if (gender === 'female') {
+      bmr = FEMALE_BMR_CONSTANT + (WEIGHT_CONSTANT * weight) + (HEIGHT_CONSTANT * height) - (AGE_CONSTANT * age);
+  } else {
+      throw new Error('Invalid gender');
+  }
+
+  switch (goal) {
+     case 'Get Fitter':
+         break;
+     case 'Gain Muscle':
+         bmr *= 1.2;
+         break;
+     case 'Lose Weight':
+         bmr *= 0.8;
+         break;
+     case 'Build Muscle':
+         bmr *= 1.1;
+         break;
+     case 'Improve Endurance':
+         bmr *= 1.05;
+         break;
+     default:
+         throw new Error('Invalid goal');
+ }
+
+  const activityFactor = activityLevel;
+  
+  if (!activityFactor) {
+      throw new Error('Invalid activity level');
+  }
+  const caloriesRequired = bmr * activityFactor;
+
+  return caloriesRequired;
+}
+
 const CustomerController = {
   get_customer_data: async (req, res) => {
     try {
@@ -289,7 +336,6 @@ const CustomerController = {
       res.status(500).json({ error: error.message });
     }
   },
-
   store_preferences: async (req, res) => {
     try {
       const { cust_id, gender, age, weight, height, goal, activityLevel } =
@@ -307,69 +353,54 @@ const CustomerController = {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      // Calculate BMR based on gender
+      const numericHeight = parseFloat(height.match(/\d+/)[0]);
+      const numericWeight = parseFloat(weight.match(/\d+/)[0]);
 
-      const numericPart2 = height.match(/\d+/);
-      const number2 = parseFloat(numericPart2[0]);
-
-      const numericPart3 = weight.match(/\d+/);
-      const number3 = parseFloat(numericPart3[0]);
-
-      let bmr;
-      if (gender === "male") {
-        bmr =
-          10 * parseFloat(number3).toFixed(2) +
-          6.25 * parseFloat(number2).toFixed(2) -
-          5 * parseFloat(age).toFixed(2) +
-          5;
-      } else if (gender === "female") {
-        bmr =
-          10 * parseFloat(number3).toFixed(2) +
-          6.25 * parseFloat(number2).toFixed(2) -
-          5 * parseFloat(age).toFixed(2) -
-          161;
-      }
-
-      // Adjust BMR based on activity level (TDEE) - Total Daily Energy Expenditure
-      let tdee = 2000;
-      switch (goal) {
-        case "Get Fitter":
+      let activityMultiplier = 0;
+      switch (activityLevel) {
+        case "Sedentary":
           activityMultiplier = 1.2;
           break;
-        case "Gain Weight":
+        case "Lightly Active":
           activityMultiplier = 1.375;
           break;
-        case "Lose Weight":
+        case "Moderately Active":
           activityMultiplier = 1.55;
           break;
-        case "Build Muscle":
+        case "Very Active":
           activityMultiplier = 1.725;
           break;
-        case "Improve Endurance":
+        case "Extra Active":
           activityMultiplier = 1.9;
           break;
         default:
-          activityMultiplier = 1.2; // Default to Get Fitter
+          activityMultiplier = 1.2;
       }
 
+      let bmr = calculateCalories(numericWeight, numericHeight, gender, age, goal, activityMultiplier);
+
+
       let existingPreference = await Preferences.findOne({ cust_id });
-      const customerData = await Customer.findById({ cust_id });
+      const customerData = await Customer.findById( cust_id );
+
+      customerData.dailyCalories = parseFloat(bmr).toFixed(0);
+      await customerData.save();
 
       if (existingPreference) {
-        // Update existing preference
         existingPreference.gender = gender;
         existingPreference.age = age;
-        existingPreference.weight = number3;
-        existingPreference.height = number2;
+        existingPreference.weight = weight;
+        existingPreference.height = height;
         existingPreference.goal = goal;
         existingPreference.activityLevel = activityLevel;
-        existingPreference.minimumCalories = tdee; // Store calculated minimum calories
+        existingPreference.minimumCalories = parseFloat(bmr).toFixed(0);
 
         await existingPreference.save();
 
         res.status(200).json({
           message: "Preferences updated successfully",
           updatedPreference: existingPreference,
+          customerData: customerData
         });
       } else {
         // Create new preference
@@ -381,7 +412,7 @@ const CustomerController = {
           height,
           goal,
           activityLevel,
-          minimumCalories: tdee, // Store calculated minimum calories
+          minimumCalories: tdee,
         });
 
         await newPreference.save();
