@@ -17,9 +17,9 @@ const calculateCalories = (weight, height, gender, age, goal, activityLevel) => 
   const AGE_CONSTANT = 6.775;
 
   let bmr;
-  if (gender === 'male') {
+  if (gender === 'Male') {
       bmr = MALE_BMR_CONSTANT + (WEIGHT_CONSTANT * weight) + (HEIGHT_CONSTANT * height) - (AGE_CONSTANT * age);
-  } else if (gender === 'female') {
+  } else if (gender === 'Female') {
       bmr = FEMALE_BMR_CONSTANT + (WEIGHT_CONSTANT * weight) + (HEIGHT_CONSTANT * height) - (AGE_CONSTANT * age);
   } else {
       throw new Error('Invalid gender');

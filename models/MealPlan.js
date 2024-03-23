@@ -1,15 +1,9 @@
 const mongoose = require('mongoose');
 
 const mealTypeSchema = new mongoose.Schema({
-  cust_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Customer',
-    required: true
-  },
   type: String,
-  short_name: String,
-  full_name: String,
-  total_cal: Number,
+  name: String,
+  calories: Number,
   recipe: String
 });
 
@@ -20,9 +14,9 @@ const mealPlanSchema = new mongoose.Schema({
     required: true
   },
   meals: {
-    breakfast: { type: mealTypeSchema, required: true },
-    lunch: { type: mealTypeSchema, required: true },
-    dinner: { type: mealTypeSchema, required: true }
+    breakfast: [{ type: mealTypeSchema, required: false }],
+    lunch: [{ type: mealTypeSchema, required: false }],
+    dinner: [{ type: mealTypeSchema, required: false }]
   }
 });
 
