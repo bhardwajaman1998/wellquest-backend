@@ -59,8 +59,15 @@ const CustomerController = {
     try {
       console.log(req.query.customerId);
       const customerData = await Customer.findById(req.query.customerId);
-      console.log(customerData);
-      res.status(200).json(customerData);
+      const cust_id = req.query.customerId
+      const newMealPlan = await mealPlan.findOne({ cust_id });
+      if (!newMealPlan) {
+        const data = {customerData}
+        res.status(200).json(data);
+      }else{
+        const data = {customerData , newMealPlan}
+        res.status(200).json(data);
+      }
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -185,11 +192,25 @@ const CustomerController = {
   make_meal_plan: async (req, res) => {
     try {
       const { cust_id, meals } = req.body;
-
+  
       if (!cust_id || !meals.breakfast || !meals.lunch || !meals.dinner) {
         return res.status(400).json({ error: "Missing required fields" });
       }
-
+  
+      let existingMealPlan = await mealPlan.findOne({ cust_id });
+  
+      if (existingMealPlan) {
+        existingMealPlan.meals = {
+          breakfast: meals.breakfast,
+          lunch: meals.lunch,
+          dinner: meals.dinner,
+        };
+  
+        await existingMealPlan.save();
+  
+        return res.status(200).json({ message: "Meal plan updated successfully", existingMealPlan });
+      }
+  
       const newMealPlan = new mealPlan({
         cust_id,
         meals: {
@@ -198,12 +219,10 @@ const CustomerController = {
           dinner: meals.dinner,
         },
       });
-
+  
       await newMealPlan.save();
-
-      res
-        .status(201)
-        .json({ message: "Meal plan created successfully", newMealPlan });
+  
+      res.status(201).json({ message: "Meal plan created successfully", newMealPlan });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

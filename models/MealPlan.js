@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const mealTypeSchema = new mongoose.Schema({
   type: String,
   name: String,
-  calories: Number,
-  recipe: String
+  calories: String,
+  description: String
 });
 
 const mealPlanSchema = new mongoose.Schema({
