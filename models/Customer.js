@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
-  _id: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-  },
   name: String,
   email: String,
   password: String,
@@ -13,7 +9,7 @@ const customerSchema = new mongoose.Schema({
     ref: 'Coach',
     required: false
   },
-  cust_id: String,
+  cust_id: mongoose.Schema.Types.ObjectId,
   dailyCalories: Number
 });
 
