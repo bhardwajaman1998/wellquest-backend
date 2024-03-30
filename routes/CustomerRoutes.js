@@ -12,6 +12,7 @@ router.get(
   CustomerController.get_scheduled_appointments
 );
 router.post("/schedule_appointment", CustomerController.schedule_appointment);
+router.post("/cancel_appointment", CustomerController.cancel_appointment);
 
 router.get("/get_coaches", CustomerController.get_coaches);
 router.post("/select_coach", CustomerController.select_coach);

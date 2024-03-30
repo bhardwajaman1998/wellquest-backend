@@ -144,6 +144,35 @@ const CustomerController = {
     }
   },
 
+  cancel_appointment: async (req, res) => {
+    try {
+      const { apt_id } = req.body;
+      console.log(req.body);
+
+      if (!apt_id) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      const currentAppointment = await Appointment.findById(apt_id);
+      if (!currentAppointment) {
+        return res.status(404).json({ error: "Appointment not found" });
+      }
+
+      currentAppointment.cancelled = true
+ 
+      await currentAppointment.save();
+
+      console.log(currentAppointment)
+
+      res.status(201).json({
+        message: "Appointment cancelled successfully",
+        currentAppointment,
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   get_coaches: async (req, res) => {
     try {
       const coaches = await Coach.find();

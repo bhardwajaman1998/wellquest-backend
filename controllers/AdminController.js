@@ -15,7 +15,7 @@ const signUp = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const admin = new Admin({ email, password: hashedPassword, name });
+    const admin = new Admin({ email, password: hashedPassword, name, daliyCalories: 2500 });
 
     admin.cust_id = admin._id;
 
@@ -50,7 +50,7 @@ const signIn = async (req, res) => {
     const token = jwt.sign({ adminId: admin.email }, secretKey, { expiresIn: '10d' });
     const data = {admin, token}
     
-    res.json({ message: 'Admin logged in successfully', data});
+    res.status(201).json({ message: 'Admin logged in successfully', data});
   } catch (error) {
     console.error('Error logging in admin:', error);
     res.status(500).json({ message: 'An error occurred while logging in admin' });

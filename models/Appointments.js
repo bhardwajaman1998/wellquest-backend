@@ -13,6 +13,10 @@ const appointmentSchema = new mongoose.Schema({
       ref: 'Customer',
       required: true
     },
+    cancelled: {
+      type: Boolean,
+      default: false
+    },
     timeSlot:String,
   });
   
